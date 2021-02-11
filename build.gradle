@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "io.ratpack:ratpack-gradle:1.8.2"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+apply plugin: "io.ratpack.ratpack-java"
+apply plugin: "idea"
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    runtime "org.slf4j:slf4j-simple:1.7.30"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    applicationDefaultJvmArgs = [
+            "-javaagent:${projectDir}/dd-java-agent.jar",
+            '-Ddd.profiling.enabled=true',
+            '-Ddd.logs.injection=true',
+            '-Ddd.writer.type=LoggingWriter',
+            '-Dport=5050'
+    ]
+}
+
+shadowJar {
+    archiveFileName = "ratpackddapmfork.jar"
+}
+
+mainClassName = "my.app.Main"
